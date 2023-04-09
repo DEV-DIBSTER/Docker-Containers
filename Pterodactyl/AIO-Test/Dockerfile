@@ -1,6 +1,6 @@
 FROM debian:buster
 
-MAINTAINER DIBSTER, <dibster@danbot.host>
+LABEL maintainer="DIBSTER <dibster@danbot.host>""
 
 RUN apt update \
     && apt upgrade -y \
