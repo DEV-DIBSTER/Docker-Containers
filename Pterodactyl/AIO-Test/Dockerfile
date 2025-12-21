@@ -1,19 +1,20 @@
-FROM debian:buster
+FROM debian
 
 LABEL maintainer="DIBSTER <contact@dibster.dev>"
 
-RUN apt update \
-    && apt upgrade -y \
-    && apt -y install curl software-properties-common locales git \
+# Install Dependencies:
+RUN apt-get update \
+    && apt-get upgrade -y \
+    && apt-get -y install curl locales git \
     && apt-get -y install liblzma-dev \
     && apt-get -y install lzma \
     && adduser container \
     && apt-get update \ 
-    && apt -y install cmake \
-    && apt -y install wget \
-    && apt -y install unzip 
+    && apt-get -y install cmake \
+    && apt-get -y install wget \
+    && apt-get -y install unzip 
 
-# Grant sudo permissions to container user for commands
+# Grant Sudo Permissions:
 RUN apt-get update && \
     apt-get -y install sudo
     
@@ -23,7 +24,7 @@ RUN echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
 RUN echo "LANG=en_US.UTF-8" > /etc/locale.conf
 RUN locale-gen en_US.UTF-8
 
-# Add Ping command 
+# Add Ping Utility 
 RUN apt-get update && apt-get install -y iputils-ping
 
 # OpenJDK 21 LTS
@@ -39,9 +40,6 @@ ENV PATH=$PATH:$JAVA_HOME/bin
 # NodeJS
 RUN curl -sL https://deb.nodesource.com/setup_lts.x | bash - \
     && apt-get -y install nodejs imagemagick ffmpeg make build-essential 
-
-# Install NVM
-run curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
     
 # Python 2 & 3
 RUN apt update \
@@ -57,8 +55,10 @@ RUN apt update \
    && rm Python-3.12.*.tgz 
    
 # Upgrade Pip
-RUN apt -y install python3 python3-pip \
-   && pip3 install --upgrade pip
+RUN apt-get update && apt-get install -y \
+    python3 \
+    python3-pip \
+    && rm -rf /var/lib/apt/lists/*
 
 # Golang
 RUN curl -OL https://golang.org/dl/go1.21.5.linux-amd64.tar.gz \
@@ -66,62 +66,27 @@ RUN curl -OL https://golang.org/dl/go1.21.5.linux-amd64.tar.gz \
 ENV PATH=$PATH:/usr/local/go/bin
 ENV GOROOT=/usr/local/go
 
-#.NET Core Runtime and SDK
-RUN wget https://packages.microsoft.com/config/debian/11/packages-microsoft-prod.deb -O packages-microsoft-prod.deb \
-   && dpkg -i packages-microsoft-prod.deb \ 
-   && rm packages-microsoft-prod.deb \
-   && apt-get update \
-   && apt-get install -y apt-transport-https \
-   && apt-get update \
-   && apt-get install -y aspnetcore-runtime-6.0 dotnet-sdk-6.0 
-
-# Install the speedtest by ookla
+# Install the speedtest by Ookla
 RUN curl -s https://packagecloud.io/install/repositories/ookla/speedtest-cli/script.deb.sh | sudo bash \
     && apt-get install speedtest -y
 # For calling speedtest, enter command "speedtest --accept-license YES"
 
-# Install the system dependencies required for puppeteer support
-RUN apt-get install -y \
-    fonts-liberation \
-    gconf-service \
-    libappindicator1 \
-    libasound2 \
-    libatk1.0-0 \
-    libcairo2 \
-    libcups2 \
-    libfontconfig1 \
-    libgbm-dev \
-    libgdk-pixbuf2.0-0 \
-    libgtk-3-0 \
-    libicu-dev \
-    libjpeg-dev \
-    libnspr4 \
-    libnss3 \
-    libpango-1.0-0 \
-    libpangocairo-1.0-0 \
-    libpng-dev \
-    libx11-6 \
-    libx11-xcb1 \
-    libxcb1 \
-    libxcomposite1 \
-    libxcursor1 \
-    libxdamage1 \
-    libxext6 \
-    libxfixes3 \
-    libxi6 \
-    libxrandr2 \
-    libxrender1 \
-    libxss1 \
-    libxtst6 \
-    xdg-utils
-
 # Installing NodeJS dependencies for AIO.
 RUN npm i -g yarn pm2 pnpm
 
+# Switching to container user:
+USER container
+ENV NVM_DIR=/home/container/.nvm
+
+# Install NVM
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash \
+    && echo 'export NVM_DIR="$HOME/.nvm"' >> $HOME/.bashrc \
+    && echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> $HOME/.bashrc \
+    && echo '[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"' >> $HOME/.bashrc
 
 USER container
-ENV  USER container
-ENV  HOME /home/container
+ENV USER=container
+ENV HOME=/home/container
 
 WORKDIR /home/container
 
