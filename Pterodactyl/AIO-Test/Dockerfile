@@ -10,7 +10,8 @@ RUN apt update \
     && adduser container \
     && apt-get update \ 
     && apt -y install cmake \
-    && apt -y install wget
+    && apt -y install wget \
+    && apt -y install unzip 
 
 # Grant sudo permissions to container user for commands
 RUN apt-get update && \
@@ -40,7 +41,7 @@ RUN curl -sL https://deb.nodesource.com/setup_lts.x | bash - \
     && apt-get -y install nodejs imagemagick ffmpeg make build-essential 
 
 # Install NVM
-RUN command curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+run curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
     
 # Python 2 & 3
 RUN apt update \
