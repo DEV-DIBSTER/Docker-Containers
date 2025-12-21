@@ -75,14 +75,14 @@ RUN curl -s https://packagecloud.io/install/repositories/ookla/speedtest-cli/scr
 RUN npm i -g yarn pm2 pnpm
 
 # Switching to container user:
-USER container
-ENV NVM_DIR=/home/container/.nvm
+# USER container
+# ENV NVM_DIR=/home/container/.nvm
 
-# Install NVM
-RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash \
-    && echo 'export NVM_DIR="$HOME/.nvm"' >> $HOME/.bashrc \
-    && echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> $HOME/.bashrc \
-    && echo '[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"' >> $HOME/.bashrc
+# # Install NVM
+# RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash \
+#     && echo 'export NVM_DIR="$HOME/.nvm"' >> $HOME/.bashrc \
+#     && echo '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"' >> $HOME/.bashrc \
+#     && echo '[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"' >> $HOME/.bashrc
 
 USER container
 ENV USER=container
